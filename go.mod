@@ -8,4 +8,3 @@ require (
 	github.com/gozelle/objx v0.5.10
 	gopkg.in/yaml.v3 v3.0.1
 )
-gst
