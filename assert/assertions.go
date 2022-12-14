@@ -20,7 +20,7 @@ import (
 	
 	"github.com/gozelle/go-difflib/difflib"
 	"github.com/gozelle/go-spew/spew"
-	yaml "gopkg.in/yaml.v3"
+	yaml "github.com/gozelle/yaml"
 )
 
 //go:generate sh -c "cd ../_codegen && go build && cd - && ../_codegen/_codegen -output-package=assert -template=assertion_format.go.tmpl"
