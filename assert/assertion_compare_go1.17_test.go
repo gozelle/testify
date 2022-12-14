@@ -31,26 +31,26 @@ func TestCompare17(t *testing.T) {
 		if !isComparable {
 			t.Error("object should be comparable for type " + currCase.cType)
 		}
-
+		
 		if resLess != compareLess {
 			t.Errorf("object less (%v) should be less than greater (%v) for type "+currCase.cType,
 				currCase.less, currCase.greater)
 		}
-
+		
 		resGreater, isComparable := compare(currCase.greater, currCase.less, reflect.ValueOf(currCase.less).Kind())
 		if !isComparable {
 			t.Error("object are comparable for type " + currCase.cType)
 		}
-
+		
 		if resGreater != compareGreater {
 			t.Errorf("object greater should be greater than less for type " + currCase.cType)
 		}
-
+		
 		resEqual, isComparable := compare(currCase.less, currCase.less, reflect.ValueOf(currCase.less).Kind())
 		if !isComparable {
 			t.Error("object are comparable for type " + currCase.cType)
 		}
-
+		
 		if resEqual != 0 {
 			t.Errorf("objects should be equal for type " + currCase.cType)
 		}
@@ -59,19 +59,19 @@ func TestCompare17(t *testing.T) {
 
 func TestGreater17(t *testing.T) {
 	mockT := new(testing.T)
-
+	
 	if !Greater(mockT, 2, 1) {
 		t.Error("Greater should return true")
 	}
-
+	
 	if Greater(mockT, 1, 1) {
 		t.Error("Greater should return false")
 	}
-
+	
 	if Greater(mockT, 1, 2) {
 		t.Error("Greater should return false")
 	}
-
+	
 	// Check error report
 	for _, currCase := range []struct {
 		less    interface{}
@@ -84,25 +84,25 @@ func TestGreater17(t *testing.T) {
 		out := &outputT{buf: bytes.NewBuffer(nil)}
 		False(t, Greater(out, currCase.less, currCase.greater))
 		Contains(t, out.buf.String(), currCase.msg)
-		Contains(t, out.helpers, "github.com/stretchr/testify/assert.Greater")
+		Contains(t, out.helpers, "github.com/gozelle/testify/assert.Greater")
 	}
 }
 
 func TestGreaterOrEqual17(t *testing.T) {
 	mockT := new(testing.T)
-
+	
 	if !GreaterOrEqual(mockT, 2, 1) {
 		t.Error("GreaterOrEqual should return true")
 	}
-
+	
 	if !GreaterOrEqual(mockT, 1, 1) {
 		t.Error("GreaterOrEqual should return true")
 	}
-
+	
 	if GreaterOrEqual(mockT, 1, 2) {
 		t.Error("GreaterOrEqual should return false")
 	}
-
+	
 	// Check error report
 	for _, currCase := range []struct {
 		less    interface{}
@@ -115,25 +115,25 @@ func TestGreaterOrEqual17(t *testing.T) {
 		out := &outputT{buf: bytes.NewBuffer(nil)}
 		False(t, GreaterOrEqual(out, currCase.less, currCase.greater))
 		Contains(t, out.buf.String(), currCase.msg)
-		Contains(t, out.helpers, "github.com/stretchr/testify/assert.GreaterOrEqual")
+		Contains(t, out.helpers, "github.com/gozelle/testify/assert.GreaterOrEqual")
 	}
 }
 
 func TestLess17(t *testing.T) {
 	mockT := new(testing.T)
-
+	
 	if !Less(mockT, 1, 2) {
 		t.Error("Less should return true")
 	}
-
+	
 	if Less(mockT, 1, 1) {
 		t.Error("Less should return false")
 	}
-
+	
 	if Less(mockT, 2, 1) {
 		t.Error("Less should return false")
 	}
-
+	
 	// Check error report
 	for _, currCase := range []struct {
 		less    interface{}
@@ -146,25 +146,25 @@ func TestLess17(t *testing.T) {
 		out := &outputT{buf: bytes.NewBuffer(nil)}
 		False(t, Less(out, currCase.greater, currCase.less))
 		Contains(t, out.buf.String(), currCase.msg)
-		Contains(t, out.helpers, "github.com/stretchr/testify/assert.Less")
+		Contains(t, out.helpers, "github.com/gozelle/testify/assert.Less")
 	}
 }
 
 func TestLessOrEqual17(t *testing.T) {
 	mockT := new(testing.T)
-
+	
 	if !LessOrEqual(mockT, 1, 2) {
 		t.Error("LessOrEqual should return true")
 	}
-
+	
 	if !LessOrEqual(mockT, 1, 1) {
 		t.Error("LessOrEqual should return true")
 	}
-
+	
 	if LessOrEqual(mockT, 2, 1) {
 		t.Error("LessOrEqual should return false")
 	}
-
+	
 	// Check error report
 	for _, currCase := range []struct {
 		less    interface{}
@@ -177,6 +177,6 @@ func TestLessOrEqual17(t *testing.T) {
 		out := &outputT{buf: bytes.NewBuffer(nil)}
 		False(t, LessOrEqual(out, currCase.greater, currCase.less))
 		Contains(t, out.buf.String(), currCase.msg)
-		Contains(t, out.helpers, "github.com/stretchr/testify/assert.LessOrEqual")
+		Contains(t, out.helpers, "github.com/gozelle/testify/assert.LessOrEqual")
 	}
 }

@@ -23,12 +23,12 @@ import (
 	"regexp"
 	"strings"
 	"text/template"
-
+	
 	"github.com/ernesto-jimenez/gogen/imports"
 )
 
 var (
-	pkg       = flag.String("assert-path", "github.com/stretchr/testify/assert", "Path to the assert package")
+	pkg       = flag.String("assert-path", "github.com/gozelle/testify/assert", "Path to the assert package")
 	includeF  = flag.Bool("include-format-funcs", false, "include format functions such as Errorf and Equalf")
 	outputPkg = flag.String("output-package", "", "package for the resulting code")
 	tmplFile  = flag.String("template", "", "What file to load the function template from")
@@ -37,17 +37,17 @@ var (
 
 func main() {
 	flag.Parse()
-
+	
 	scope, docs, err := parsePackageSource(*pkg)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	
 	importer, funcs, err := analyzeCode(scope, docs)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	
 	if err := generateCode(importer, funcs); err != nil {
 		log.Fatal(err)
 	}
@@ -55,12 +55,12 @@ func main() {
 
 func generateCode(importer imports.Importer, funcs []testFunc) error {
 	buff := bytes.NewBuffer(nil)
-
+	
 	tmplHead, tmplFunc, err := parseTemplates()
 	if err != nil {
 		return err
 	}
-
+	
 	// Generate header
 	if err := tmplHead.Execute(buff, struct {
 		Name    string
@@ -71,7 +71,7 @@ func generateCode(importer imports.Importer, funcs []testFunc) error {
 	}); err != nil {
 		return err
 	}
-
+	
 	// Generate funcs
 	for _, fn := range funcs {
 		buff.Write([]byte("\n\n"))
@@ -79,12 +79,12 @@ func generateCode(importer imports.Importer, funcs []testFunc) error {
 			return err
 		}
 	}
-
+	
 	code, err := format.Source(buff.Bytes())
 	if err != nil {
 		return err
 	}
-
+	
 	// Write file
 	output, err := outputFile()
 	if err != nil {
@@ -129,14 +129,14 @@ func outputFile() (*os.File, error) {
 // information and information about all the assertion functions.
 func analyzeCode(scope *types.Scope, docs *doc.Package) (imports.Importer, []testFunc, error) {
 	testingT := scope.Lookup("TestingT").Type().Underlying().(*types.Interface)
-
+	
 	importer := imports.New(*outputPkg)
 	var funcs []testFunc
 	// Go through all the top level functions
 	for _, fdocs := range docs.Funcs {
 		// Find the function
 		obj := scope.Lookup(fdocs.Name)
-
+		
 		fn, ok := obj.(*types.Func)
 		if !ok {
 			continue
@@ -158,12 +158,12 @@ func analyzeCode(scope *types.Scope, docs *doc.Package) (imports.Importer, []tes
 		if !types.Implements(firstType, testingT) {
 			continue
 		}
-
+		
 		// Skip functions ending with f
 		if strings.HasSuffix(fdocs.Name, "f") && !*includeF {
 			continue
 		}
-
+		
 		funcs = append(funcs, testFunc{*outputPkg, fdocs, fn})
 		importer.AddImportsFrom(sig.Params())
 	}
@@ -176,7 +176,7 @@ func parsePackageSource(pkg string) (*types.Scope, *doc.Package, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-
+	
 	fset := token.NewFileSet()
 	files := make(map[string]*ast.File)
 	fileList := make([]*ast.File, len(pd.GoFiles))
@@ -192,7 +192,7 @@ func parsePackageSource(pkg string) (*types.Scope, *doc.Package, error) {
 		files[fname] = f
 		fileList[i] = f
 	}
-
+	
 	cfg := types.Config{
 		Importer: importer.For("source", nil),
 	}
@@ -203,12 +203,12 @@ func parsePackageSource(pkg string) (*types.Scope, *doc.Package, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-
+	
 	scope := tp.Scope()
-
+	
 	ap, _ := ast.NewPackage(fset, files, nil, nil)
 	docs := doc.New(ap, pkg, 0)
-
+	
 	return scope, docs, nil
 }
 
@@ -232,7 +232,7 @@ func (f *testFunc) Params() string {
 	comma := ""
 	to := params.Len()
 	var i int
-
+	
 	if sig.Variadic() {
 		to--
 	}
@@ -255,7 +255,7 @@ func (f *testFunc) ForwardedParams() string {
 	comma := ""
 	to := params.Len()
 	var i int
-
+	
 	if sig.Variadic() {
 		to--
 	}
@@ -298,7 +298,7 @@ func (f *testFunc) CommentWithoutT(receiver string) string {
 }
 
 var headerTemplate = `/*
-* CODE GENERATED AUTOMATICALLY WITH github.com/stretchr/testify/_codegen
+* CODE GENERATED AUTOMATICALLY WITH github.com/gozelle/testify/_codegen
 * THIS FILE MUST NOT BE EDITED BY HAND
 */
 

@@ -11,9 +11,9 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	
+	"github.com/gozelle/testify/assert"
+	"github.com/gozelle/testify/require"
 )
 
 // SuiteRequireTwice is intended to test the usage of suite.Require in two
@@ -132,11 +132,11 @@ func TestSuiteRecoverPanic(t *testing.T) {
 			F:    func(t *testing.T) { Run(t, &panickingSuite{panicInTearDownSuite: true}) },
 		},
 	}
-
+	
 	require.NotPanics(t, func() {
 		ok = testing.RunTests(allTestsFilter, panickingTests)
 	})
-
+	
 	assert.False(t, ok)
 }
 
@@ -149,7 +149,7 @@ func TestSuiteRecoverPanic(t *testing.T) {
 type SuiteTester struct {
 	// Include our basic suite logic.
 	Suite
-
+	
 	// Keep counts of how many times each method is run.
 	SetupSuiteRunCount      int
 	TearDownSuiteRunCount   int
@@ -161,13 +161,13 @@ type SuiteTester struct {
 	NonTestMethodRunCount   int
 	SetupSubTestRunCount    int
 	TearDownSubTestRunCount int
-
+	
 	SuiteNameBefore []string
 	TestNameBefore  []string
-
+	
 	SuiteNameAfter []string
 	TestNameAfter  []string
-
+	
 	TimeBefore []time.Time
 	TimeAfter  []time.Time
 }
@@ -238,7 +238,7 @@ func (suite *SuiteTester) NonTestMethod() {
 
 func (suite *SuiteTester) TestSubtest() {
 	suite.TestSubtestRunCount++
-
+	
 	for _, t := range []struct {
 		testName string
 	}{
@@ -268,7 +268,7 @@ func (suite *SuiteTester) SetupSubTest() {
 type SuiteSkipTester struct {
 	// Include our basic suite logic.
 	Suite
-
+	
 	// Keep counts of how many times each method is run.
 	SetupSuiteRunCount    int
 	TearDownSuiteRunCount int
@@ -294,80 +294,80 @@ func (suite *SuiteSkipTester) TearDownSuite() {
 func TestRunSuite(t *testing.T) {
 	suiteTester := new(SuiteTester)
 	Run(t, suiteTester)
-
+	
 	// Normally, the test would end here.  The following are simply
 	// some assertions to ensure that the Run function is working as
 	// intended - they are not part of the example.
-
+	
 	// The suite was only run once, so the SetupSuite and TearDownSuite
 	// methods should have each been run only once.
 	assert.Equal(t, suiteTester.SetupSuiteRunCount, 1)
 	assert.Equal(t, suiteTester.TearDownSuiteRunCount, 1)
-
+	
 	assert.Equal(t, len(suiteTester.SuiteNameAfter), 4)
 	assert.Equal(t, len(suiteTester.SuiteNameBefore), 4)
 	assert.Equal(t, len(suiteTester.TestNameAfter), 4)
 	assert.Equal(t, len(suiteTester.TestNameBefore), 4)
-
+	
 	assert.Contains(t, suiteTester.TestNameAfter, "TestOne")
 	assert.Contains(t, suiteTester.TestNameAfter, "TestTwo")
 	assert.Contains(t, suiteTester.TestNameAfter, "TestSkip")
 	assert.Contains(t, suiteTester.TestNameAfter, "TestSubtest")
-
+	
 	assert.Contains(t, suiteTester.TestNameBefore, "TestOne")
 	assert.Contains(t, suiteTester.TestNameBefore, "TestTwo")
 	assert.Contains(t, suiteTester.TestNameBefore, "TestSkip")
 	assert.Contains(t, suiteTester.TestNameBefore, "TestSubtest")
-
+	
 	for _, suiteName := range suiteTester.SuiteNameAfter {
 		assert.Equal(t, "SuiteTester", suiteName)
 	}
-
+	
 	for _, suiteName := range suiteTester.SuiteNameBefore {
 		assert.Equal(t, "SuiteTester", suiteName)
 	}
-
+	
 	for _, when := range suiteTester.TimeAfter {
 		assert.False(t, when.IsZero())
 	}
-
+	
 	for _, when := range suiteTester.TimeBefore {
 		assert.False(t, when.IsZero())
 	}
-
+	
 	// There are four test methods (TestOne, TestTwo, TestSkip, and TestSubtest), so
 	// the SetupTest and TearDownTest methods (which should be run once for
 	// each test) should have been run four times.
 	assert.Equal(t, suiteTester.SetupTestRunCount, 4)
 	assert.Equal(t, suiteTester.TearDownTestRunCount, 4)
-
+	
 	// Each test should have been run once.
 	assert.Equal(t, suiteTester.TestOneRunCount, 1)
 	assert.Equal(t, suiteTester.TestTwoRunCount, 1)
 	assert.Equal(t, suiteTester.TestSubtestRunCount, 1)
-
+	
 	assert.Equal(t, suiteTester.TearDownSubTestRunCount, 2)
 	assert.Equal(t, suiteTester.SetupSubTestRunCount, 2)
-
+	
 	// Methods that don't match the test method identifier shouldn't
 	// have been run at all.
 	assert.Equal(t, suiteTester.NonTestMethodRunCount, 0)
-
+	
 	suiteSkipTester := new(SuiteSkipTester)
 	Run(t, suiteSkipTester)
-
+	
 	// The suite was only run once, so the SetupSuite and TearDownSuite
 	// methods should have each been run only once, even though SetupSuite
 	// called Skip()
 	assert.Equal(t, suiteSkipTester.SetupSuiteRunCount, 1)
 	assert.Equal(t, suiteSkipTester.TearDownSuiteRunCount, 1)
-
+	
 }
 
 // This suite has no Test... methods. It's setup and teardown must be skipped.
 type SuiteSetupSkipTester struct {
 	Suite
-
+	
 	setUp    bool
 	toreDown bool
 }
@@ -450,10 +450,10 @@ func TestSuiteLogging(t *testing.T) {
 	output, err := capture.StopCapture()
 	require.NoError(t, err, "Got an error trying to capture stdout and stderr!")
 	require.NotEmpty(t, output, "output content must not be empty")
-
+	
 	// Failed tests' output is always printed
 	assert.Contains(t, output, "TESTLOGFAIL")
-
+	
 	if testing.Verbose() {
 		// In verbose mode, output from successful tests is also printed
 		assert.Contains(t, output, "TESTLOGPASS")
@@ -520,7 +520,7 @@ func (s *suiteWithStats) TestPanic() {
 
 func TestSuiteWithStats(t *testing.T) {
 	suiteWithStats := new(suiteWithStats)
-
+	
 	testing.RunTests(allTestsFilter, []testing.InternalTest{
 		{
 			Name: "WithStats",
@@ -529,18 +529,18 @@ func TestSuiteWithStats(t *testing.T) {
 			},
 		},
 	})
-
+	
 	assert.True(t, suiteWithStats.wasCalled)
 	assert.NotZero(t, suiteWithStats.stats.Start)
 	assert.NotZero(t, suiteWithStats.stats.End)
 	assert.False(t, suiteWithStats.stats.Passed())
-
+	
 	testStats := suiteWithStats.stats.TestStats
-
+	
 	assert.NotZero(t, testStats["TestSomething"].Start)
 	assert.NotZero(t, testStats["TestSomething"].End)
 	assert.True(t, testStats["TestSomething"].Passed)
-
+	
 	assert.NotZero(t, testStats["TestPanic"].Start)
 	assert.NotZero(t, testStats["TestPanic"].End)
 	assert.False(t, testStats["TestPanic"].Passed)
